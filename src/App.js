@@ -1,30 +1,62 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={ logo } className="App-logo" alt="logo" />
-        <p>
-          Edit
-          <code>
-            src/App.js
-          </code>
-          and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+  constructor() {
+    super();
+    this.outroCachorro = this.outroCachorro.bind(this);
+    this.state = {
+      loading: true,
+      urlImage: null,
+    }
+  }
+
+  async urlFetch() {
+    const response = await fetch('https://dog.ceo/api/breeds/image/random');
+    const jsonRes = await response.json();
+    return jsonRes.message;
+  }
+
+  async componentDidMount() {
+    const urlImage = await this.urlFetch();
+    this.setState((prevState) => ({
+      loading: !prevState.loading,
+      urlImage: urlImage,
+    }))
+  }
+
+  componentDidUpdate() {
+    console.log('update')
+  }
+
+  async outroCachorro() {
+    this.setState((prevState) => ({
+      loading: !prevState.loading,
+    }))
+    const anotherlink = await this.urlFetch();
+    this.setState((prevState) => ({
+      loading: !prevState.loading,
+      urlImage: anotherlink,
+    }))
+  }
+
+  imgAndButton() {
+    const { urlImage } = this.state;
+    return(
+      <section>
+        <img src={ urlImage } alt='cute dog' />
+        <button onClick = { this.outroCachorro }>Outro Cachorro</button>
+      </section>
+    )
+  }
+
+  render () {
+    const { loading } = this.state;
+    return(
+      <div>
+        { !loading ? this.imgAndButton() : 'loading...'}
+      </div>
+    );
+  }
 }
 
 export default App;
